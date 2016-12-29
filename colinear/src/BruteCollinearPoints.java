@@ -6,43 +6,42 @@ public class BruteCollinearPoints {
     private LineSegment[] segments;
     
     // finds all line segments containing 4 points
-    public BruteCollinearPoints(Point[] points)
+    public BruteCollinearPoints(Point[] input)
     {
-        if (points == null)
-            throw new java.lang.NullPointerException("points");
+        if (input == null)
+            throw new java.lang.NullPointerException("input");
         
-        for (Point point : points) {
+        for (Point point : input) {
            if (point == null)
                throw new java.lang.NullPointerException("point"); 
         }
         
         segments = new LineSegment[0];
+        Point[] points = Arrays.copyOf(input, input.length);
+        Arrays.sort(points);
         
-        for (Point p : points) {
-            for (Point q : points) {
-                double slopePQ = p.slopeTo(q);
-                if (p.compareTo(q) > 0)
-                    continue;
-                for (Point r : points) {
-                    double slopeQR = q.slopeTo(r);
-                    if (q.compareTo(r) > 0)
-                        continue;
-                    if (slopePQ == slopeQR)
-                    {
-                        for (Point s : points) {
-                            if (s.compareTo(q) == 0 || s.compareTo(p) == 0 || s.compareTo(p) == 0)
-                                continue;
-                            double slopeRS = r.slopeTo(s);
-                            if (r.compareTo(s) > 0)
-                                continue;
-                            if (slopePQ == slopeRS)
-                            {
-                                numberOfSegments++;
-                                segments = Arrays.copyOf(segments, segments.length + 1);
-                                LineSegment segment = new LineSegment(p, s);
-                                segments[segments.length - 1] = segment;
-                            }
-                        }
+        int N = points.length;
+        for (int i = 0; i < N; i += 1) {
+            Point p = points[i];
+            for (int j = i + 1; j < N; j += 1) {
+                Point q = points[j];
+                if (p.compareTo(q) == 0)
+                    throw new java.lang.IllegalArgumentException();
+                for (int k = j + 1; k < N; k += 1) {
+                    Point r = points[k];
+                    for (int l = k + 1; l < N; l += 1) {
+                        Point s = points[l];
+                            
+                        double slopePQ = p.slopeTo(q);
+                        double slopePR = p.slopeTo(r);
+                        double slopePS = p.slopeTo(s);
+                        if (slopePQ == slopePR && slopePQ == slopePS
+                                && slopePR == slopePS)
+                        {
+                            segments = Arrays.copyOf(segments, segments.length + 1);
+                            LineSegment segment = new LineSegment(p, s);
+                            segments[segments.length - 1] = segment;
+                        }                        
                     }
                 }
             }
@@ -52,12 +51,12 @@ public class BruteCollinearPoints {
     // the number of line segments
     public int numberOfSegments()
     {
-      return numberOfSegments;    
+        return segments.length;    
     }
     
     // the line segments
     public LineSegment[] segments()
     {
-        return segments;
+        return Arrays.copyOf(segments, numberOfSegments());
     }
 }

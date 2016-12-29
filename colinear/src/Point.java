@@ -13,17 +13,22 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class Point implements Comparable<Point> {
 
+    // Formally, the point (x1, y1) is less than the point (x2, y2) if and only 
+    // if the slope (y1 − y0) / (x1 − x0) is less than the slope (y2 − y0) / (x2 − x0). 
+    // Treat horizontal, vertical, and degenerate line segments as in the slopeTo() method.
     private class PointComparator implements Comparator<Point> {
 
         @Override
-        public int compare(Point o1, Point o2) {
-            double slope = o1.slopeTo(o2);
-            if (slope == 0)
+        public int compare(Point p1, Point p2) {
+            double slope1 = Point.this.slopeTo(p1);
+            double slope2 = Point.this.slopeTo(p2);
+            if (slope1 == slope2) {
                 return 0;
-            if (slope > 0)
-                return 1;
-            else
+            }
+            if (slope1 < slope2) {
                 return -1;
+            }
+            return 1;
         }
 
     }
@@ -78,15 +83,17 @@ public class Point implements Comparable<Point> {
         if (that == null)
             throw new java.lang.NullPointerException("that");
         
+        if (this.compareTo(that) == 0)
+            return Double.NEGATIVE_INFINITY;
         
         if (that.x == this.x)
         {
-            if (that.y > this.y)
-                return Double.POSITIVE_INFINITY;
-            else
-                return Double.NEGATIVE_INFINITY;
+            return Double.POSITIVE_INFINITY;
         }
         
+        if (that.y == this.y)
+            return +0.0;
+            
         return (that.y - this.y) / (double) (that.x - this.x);
     }
 
