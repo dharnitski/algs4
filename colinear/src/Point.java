@@ -13,11 +13,17 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class Point implements Comparable<Point> {
 
-    public class PointComparator implements Comparator<Point> {
+    private class PointComparator implements Comparator<Point> {
 
         @Override
         public int compare(Point o1, Point o2) {
-            return o2.x - o1.x;
+            double slope = o1.slopeTo(o2);
+            if (slope == 0)
+                return 0;
+            if (slope > 0)
+                return 1;
+            else
+                return -1;
         }
 
     }
@@ -69,8 +75,19 @@ public class Point implements Comparable<Point> {
      * @return the slope between this point and the specified point
      */
     public double slopeTo(Point that) {
-        /* YOUR CODE HERE */
-        return 0;
+        if (that == null)
+            throw new java.lang.NullPointerException("that");
+        
+        
+        if (that.x == this.x)
+        {
+            if (that.y > this.y)
+                return Double.POSITIVE_INFINITY;
+            else
+                return Double.NEGATIVE_INFINITY;
+        }
+        
+        return (that.y - this.y) / (double) (that.x - this.x);
     }
 
     /**
@@ -86,8 +103,16 @@ public class Point implements Comparable<Point> {
      *         argument point
      */
     public int compareTo(Point that) {
-        /* YOUR CODE HERE */
-        return that.x - this.x;
+        if (this.y == that.y && this.x == that.x)
+            return 0;
+        
+        if (this.y < that.y)
+            return -1;
+        
+        if (this.y == that.y && this.x < that.x)
+            return -1;
+        
+        return 1;
     }
 
     /**
