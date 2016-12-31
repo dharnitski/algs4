@@ -90,6 +90,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         items[i] = items[size - 1];
         size--;
         
+        // halve size of array when array is one-quarter full.
+        if (size > 0  && items.length / size >= 4)
+        {
+            Item[] newArray = Arrays.copyOf(items, items.length / 2);
+            items = newArray;
+        }
+        
         return item;
     }
     
