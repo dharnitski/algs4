@@ -3,6 +3,7 @@ public class Board {
     
     int[][] blocks;
     int dimention;
+    int lastBlock; 
     
     // construct a board from an n-by-n array of blocks
     // (where blocks[i][j] = block in row i, column j)
@@ -11,6 +12,7 @@ public class Board {
         this.blocks = new int[blocks.length][blocks[0].length]; 
         
         this.dimention = blocks.length;
+        lastBlock = dimention * dimention;
         
         for(int i=0; i < blocks.length; i++)
             for(int j=0; j < blocks[i].length; j++)
@@ -38,7 +40,24 @@ public class Board {
     // is this board the goal board?
     public boolean isGoal()
     {
-        return false;
+        int i = 1;
+        for (int[] line : blocks) {
+            for (int block : line) {
+                
+                if (i == lastBlock)
+                {
+                    if (block != 0)
+                        return false;
+                }
+                else
+                {
+                    if (block != i)
+                        return false; 
+                    i++;
+                }
+            }
+        }
+        return true;
     }
     
     // a board that is obtained by exchanging any pair of blocks
@@ -60,9 +79,25 @@ public class Board {
     }
     
     // string representation of this board (in the output format specified below)
+    // 3
+    //  1  2  3 
+    //  4  5  6 
+    //  7  8  0
     public String toString()  
     {
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append(dimention);
+        sb.append(System.lineSeparator());
+        
+        for (int[] line : blocks) {
+            for (int block : line) {
+                sb.append(block);
+                sb.append(" ");
+            }
+            sb.append(System.lineSeparator());
+        }
+        
+        return sb.toString();
     }
     
     // unit tests (not graded)
