@@ -1,9 +1,9 @@
 public class Board {
     
     
-    int[][] blocks;
-    int dimention;
-    int lastBlock; 
+    private int[][] blocks;
+    private int dimention;
+    private int lastBlock; 
     
     // construct a board from an n-by-n array of blocks
     // (where blocks[i][j] = block in row i, column j)
@@ -22,7 +22,7 @@ public class Board {
     // board dimension n
     public int dimension()  
     {
-        return 0;
+        return dimention;
     }
     
     // number of blocks out of place
@@ -69,7 +69,25 @@ public class Board {
     // does this board equal y?
     public boolean equals(Object y)
     {
-        return false;
+        if (y == null)
+            return false;
+        
+        if (!(y instanceof Board))
+            return false;
+        
+        Board that = (Board)y;
+        
+        if (this.dimention != that.dimention)
+            return false;
+        
+        for (int i = 0; i < blocks.length; i++) {
+            for (int j = 0; j < blocks[i].length; j++) {
+               if (this.blocks[i][j]!= that.blocks[i][j])
+                   return false;
+            }
+        }
+        
+        return true;
     }
     
     // all neighboring boards

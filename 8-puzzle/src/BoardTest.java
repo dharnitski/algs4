@@ -4,17 +4,30 @@ import org.junit.Test;
 
 public class BoardTest {
 
-    @Test
-    public void toStringTest() {
-        // Arrange
-        int[][] data = new int[][]{
+    private int[][] getGoal()
+    {
+        return new int[][]{
             { 1, 2, 3 },
             { 4, 5, 6 },
             { 7, 8, 0 }
         };
-        
+    }
+    
+    private int[][] getPrevious()
+    {
+        return new int[][]{
+            { 1, 2, 3 },
+            { 4, 5, 6 },
+            { 7, 0, 8 }
+        };
+    }
+    
+    
+    @Test
+    public void toStringTest() {
+        // Arrange        
         // Act
-        Board sut = new Board(data);
+        Board sut = new Board(getGoal());
         String[] lines = sut.toString().split(System.lineSeparator());
         
         // Assert
@@ -27,14 +40,8 @@ public class BoardTest {
     @Test
     public void isGoalPositiveTest() {
         // Arrange
-        int[][] data = new int[][]{
-            { 1, 2, 3 },
-            { 4, 5, 6 },
-            { 7, 8, 0 }
-        };
-        
         // Act
-        Board sut = new Board(data);
+        Board sut = new Board(getGoal());
         
         // Assert
         assertTrue(sut.isGoal());
@@ -43,17 +50,32 @@ public class BoardTest {
     @Test
     public void isGoalNegativeTest() {
         // Arrange
-        int[][] data = new int[][]{
-            { 1, 2, 3 },
-            { 4, 5, 6 },
-            { 7, 0, 8 }
-        };
-        
         // Act
-        Board sut = new Board(data);
+        Board sut = new Board(getPrevious());
         
         // Assert
         assertFalse(sut.isGoal());
     }
-
+    
+    @Test
+    public void equalsNegativeTest() {
+        // Arrange
+        // Act
+        Board sut = new Board(getPrevious());
+        Board that = new Board(getGoal());
+        
+        // Assert
+        assertFalse(sut.equals(that));
+    }
+    
+    @Test
+    public void equalsPositiveTest() {
+        // Arrange
+        // Act
+        Board sut = new Board(getPrevious());
+        Board that = new Board(getPrevious());
+        
+        // Assert
+        assertTrue(sut.equals(that));
+    }
 }
