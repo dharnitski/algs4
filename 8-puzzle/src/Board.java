@@ -28,36 +28,64 @@ public class Board {
     // number of blocks out of place
     public int hamming()
     {
-        return 0;
+        int result = 0;
+        int i = 1;
+        for (int[] line : blocks) {
+            for (int block : line) {
+                
+                if (i != lastBlock)
+                {
+                    if (block != i)
+                        result++; 
+                    i++;
+                }
+            }
+        } 
+        
+        return result;
     }
+    
+    
+    
     
     // sum of Manhattan distances between blocks and goal
     public int manhattan()
     {
-        return 0;
+        int result = 0;
+        int index = 1;
+        for(int i=1; i < blocks.length - 1; i++)
+        {
+            for(int j=1; j < blocks[i].length - 1; j++)
+            {
+               if (index != lastBlock)
+               {
+                   int block = this.blocks[i][j];
+                   
+                   if (block == 0)
+                   {
+                       result += dimention - i;
+                       result += dimention - j;
+                   }
+                   else
+                   {
+                       int goalX = block / dimention;
+                       int goalY = block - goalX * dimention;
+                   
+                       result += Math.abs(goalY - i);
+                       result += Math.abs(goalX - i);
+                   }
+                   index++;
+               }
+            }
+        }
+         
+        return result;
     }
     
     // is this board the goal board?
     public boolean isGoal()
     {
-        int i = 1;
-        for (int[] line : blocks) {
-            for (int block : line) {
-                
-                if (i == lastBlock)
-                {
-                    if (block != 0)
-                        return false;
-                }
-                else
-                {
-                    if (block != i)
-                        return false; 
-                    i++;
-                }
-            }
-        }
-        return true;
+        return hamming() == 0;
     }
     
     // a board that is obtained by exchanging any pair of blocks

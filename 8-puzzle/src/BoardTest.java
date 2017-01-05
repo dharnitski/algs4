@@ -22,6 +22,15 @@ public class BoardTest {
         };
     }
     
+    private int[][] getDistnce()
+    {
+        return new int[][]{
+            { 8, 1, 3 },
+            { 4, 0, 2 },
+            { 7, 6, 5 }
+        };
+    }
+    
     
     @Test
     public void toStringTest() {
@@ -77,5 +86,77 @@ public class BoardTest {
         
         // Assert
         assertTrue(sut.equals(that));
+    }
+    
+    @Test
+    public void hummingGoalTest() {
+        // Arrange
+        Board sut = new Board(getGoal());
+        
+        // Act
+        int actual = sut.hamming();
+        
+        // Assert
+        assertEquals(0, actual);
+    }
+    
+    @Test
+    public void hummingTest1() {
+        // Arrange
+        Board sut = new Board(getPrevious());
+        
+        // Act
+        int actual = sut.hamming();
+        
+        // Assert
+        assertEquals(1, actual);
+    }
+    
+    @Test
+    public void manhattanTest2() {
+        // Arrange
+        Board sut = new Board(getDistnce());
+        
+        // Act
+        int actual = sut.manhattan();
+        
+        // Assert
+        assertEquals(10, actual);
+    }
+    
+    @Test
+    public void manhattanGoalTest() {
+        // Arrange
+        Board sut = new Board(getGoal());
+        
+        // Act
+        int actual = sut.manhattan();
+        
+        // Assert
+        assertEquals(0, actual);
+    }
+    
+    @Test
+    public void manhattanTest1() {
+        // Arrange
+        Board sut = new Board(getPrevious());
+        
+        // Act
+        int actual = sut.manhattan();
+        
+        // Assert
+        assertEquals(1, actual);
+    }
+    
+    @Test
+    public void hummingTest2() {
+        // Arrange
+        Board sut = new Board(getDistnce());
+        
+        // Act
+        int actual = sut.hamming();
+        
+        // Assert
+        assertEquals(5, actual);
     }
 }
