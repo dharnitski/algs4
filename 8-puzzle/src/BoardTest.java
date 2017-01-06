@@ -1,5 +1,8 @@
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 
 public class BoardTest {
@@ -198,5 +201,42 @@ public class BoardTest {
         
         // Assert
         assertEquals(5, actual);
+    }
+    
+    @Test
+    public void twinTest() {
+        // Arrange
+        Board sut = new Board(getSmallGoal());
+        
+        // Act
+        Board actual = sut.twin();
+        
+        // Assert
+        assertFalse(actual.isGoal());
+    }
+    
+    @Test
+    public void neighborsTest() {
+        // Arrange
+        Board sut = new Board(getSmallPrevious());
+        
+        // Act
+        List<Board> actual = new ArrayList<>();
+        sut.neighbors().iterator().forEachRemaining(actual::add);
+        
+        // Assert
+        assertEquals(2, actual.size());
+        
+        Board board1 = new Board(new int[][]{
+            { 0, 2 },
+            { 1, 3 }
+        });
+        assertEquals(board1, actual.get(0));
+        
+        Board board2 = new Board(new int[][]{
+            { 1, 2 },
+            { 3, 0 }
+        });
+        assertEquals(board2, actual.get(1));
     }
 }

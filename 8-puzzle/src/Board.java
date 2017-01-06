@@ -1,5 +1,6 @@
+import java.util.ArrayList;
+
 public class Board {
-    
     
     private int[][] blocks;
     private int dimention;
@@ -9,14 +10,20 @@ public class Board {
     // (where blocks[i][j] = block in row i, column j)
     public Board(int[][] blocks) 
     {
-        this.blocks = new int[blocks.length][blocks[0].length]; 
+        this.blocks = clone(blocks); 
         
         this.dimention = blocks.length;
-        lastBlock = dimention * dimention;
+        lastBlock = dimention * dimention;   
+    }
+    
+    private int[][] clone(int[][] input)
+    {
+        int[][] blocks = new int[input.length][input[0].length];
         
         for(int i=0; i < blocks.length; i++)
             for(int j=0; j < blocks[i].length; j++)
-              this.blocks[i][j]=blocks[i][j];    
+              blocks[i][j] = input[i][j];
+        return blocks;
     }
     
     // board dimension n
@@ -88,7 +95,24 @@ public class Board {
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() 
     {
-        return null;
+        Board twin = new Board(this.blocks);
+        if (twin.blocks[0][0] != 0 && twin.blocks[0][1] != 0)
+        {
+            swap(twin, 0, 0, 0, 1);
+        }
+        else
+        {
+            swap(twin, 1, 0, 1, 1);
+        }
+        
+        return twin;
+    }
+    
+    private void swap(Board board, int i1, int j1, int i2, int j2)
+    {
+      int temp = board.blocks[i1][j1];
+      board.blocks[i1][j1] = board.blocks[i2][j2];
+      board.blocks[i2][j2] = temp; 
     }
     
     // does this board equal y?
@@ -118,7 +142,58 @@ public class Board {
     // all neighboring boards
     public Iterable<Board> neighbors()     
     {
-        return null;
+        ArrayList<Board> neighbors = new ArrayList<Board>();
+        
+        int i0 = 0;
+        int j0 = 0;
+        
+        for(int i=0; i < blocks.length; i++)
+            for(int j=0; j < blocks[i].length; j++)
+            {
+                if (blocks[i][j] == 0)
+                {
+                    i0 = i;
+                    j0 = j;
+                    break;
+                }
+            }
+        
+        Board clone;
+        
+        // move down
+        if (i0 != 0)
+        {
+            clone = new Board(blocks);
+            clone.swap(clone, i0, j0, i0 - 1, j0);
+            neighbors.add(clone);
+        }
+        
+        // move right
+        if (j0 != dimention - 1)
+        {
+            clone = new Board(blocks);
+            clone.swap(clone, i0, j0, i0, j0 + 1);
+            neighbors.add(clone);
+        }
+        
+        // move up
+        if (i0 != dimention - 1)
+        {
+            clone = new Board(blocks);
+            clone.swap(clone, i0, j0, i0 + 1, j0);
+            neighbors.add(clone);
+        }
+        
+        // move left
+        if (j0 != 0)
+        {
+            clone = new Board(blocks);
+            clone.swap(clone, i0, j0, i0, j0 - 1);
+            neighbors.add(clone);
+        }
+        
+        return neighbors;
+        
     }
     
     // string representation of this board (in the output format specified below)
