@@ -50,6 +50,14 @@ public class BoardTest {
         };
     }
     
+    private int[][] getDistnce2()
+    {
+        return new int[][]{
+            { 0, 1, 3 },
+            { 4, 2, 5 },
+            { 7, 8, 6 }
+        };
+    }
     
     @Test
     public void toStringTest() {
@@ -189,6 +197,18 @@ public class BoardTest {
         
         // Assert
         assertEquals(1, actual);
+    }
+    
+    @Test
+    public void manhattanTest3() {
+        // Arrange
+        Board sut = new Board(getDistnce2());
+        
+        // Act
+        int actual = sut.manhattan();
+        
+        // Assert
+        assertEquals(4, actual);
     }
     
     @Test

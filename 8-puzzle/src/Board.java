@@ -66,18 +66,14 @@ public class Board {
                    int block = this.blocks[i][j];
                    
                    if (block == 0)
-                   {
-                       result += dimention - i - 1;
-                       result += dimention - j - 1;
-                   }
-                   else
-                   {
-                       int goalX = (block - 1) / dimention;
-                       int goalY = (block - goalX * dimention) - 1;
+                       continue;
+
+                   int goalX = (block - 1) / dimention;
+                   int goalY = (block - goalX * dimention) - 1;
                    
-                       result += Math.abs(goalX - i);
-                       result += Math.abs(goalY - j);
-                   }
+                   result += Math.abs(goalX - i);
+                   result += Math.abs(goalY - j);
+
                    index++;
                }
             }
