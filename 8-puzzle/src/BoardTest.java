@@ -13,6 +13,22 @@ public class BoardTest {
         };
     }
     
+    private int[][] getSmallGoal()
+    {
+        return new int[][]{
+            { 1, 2 },
+            { 3, 0 }
+        };
+    }
+    
+    private int[][] getSmallPrevious()
+    {
+        return new int[][]{
+            { 1, 2 },
+            { 0, 3 }
+        };
+    }
+    
     private int[][] getPrevious()
     {
         return new int[][]{
@@ -134,6 +150,30 @@ public class BoardTest {
         
         // Assert
         assertEquals(0, actual);
+    }
+    
+    @Test
+    public void manhattanSmallGoalTest() {
+        // Arrange
+        Board sut = new Board(getSmallGoal());
+        
+        // Act
+        int actual = sut.manhattan();
+        
+        // Assert
+        assertEquals(0, actual);
+    }
+    
+    @Test
+    public void manhattanSmallPreviousTest() {
+        // Arrange
+        Board sut = new Board(getSmallPrevious());
+        
+        // Act
+        int actual = sut.manhattan();
+        
+        // Assert
+        assertEquals(1, actual);
     }
     
     @Test

@@ -45,17 +45,14 @@ public class Board {
         return result;
     }
     
-    
-    
-    
     // sum of Manhattan distances between blocks and goal
     public int manhattan()
     {
         int result = 0;
         int index = 1;
-        for(int i=1; i < blocks.length - 1; i++)
+        for(int i=0; i < blocks.length; i++)
         {
-            for(int j=1; j < blocks[i].length - 1; j++)
+            for(int j=0; j < blocks[i].length; j++)
             {
                if (index != lastBlock)
                {
@@ -63,16 +60,16 @@ public class Board {
                    
                    if (block == 0)
                    {
-                       result += dimention - i;
-                       result += dimention - j;
+                       result += dimention - i - 1;
+                       result += dimention - j - 1;
                    }
                    else
                    {
-                       int goalX = block / dimention;
-                       int goalY = block - goalX * dimention;
+                       int goalX = (block - 1) / dimention;
+                       int goalY = (block - goalX * dimention) - 1;
                    
-                       result += Math.abs(goalY - i);
                        result += Math.abs(goalX - i);
+                       result += Math.abs(goalY - j);
                    }
                    index++;
                }
