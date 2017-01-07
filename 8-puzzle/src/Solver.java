@@ -2,6 +2,7 @@ import java.util.ArrayDeque;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
@@ -29,22 +30,25 @@ public class Solver {
     private void processBoard()
     {        
         SearchNode goal; 
-        goal = processOneBoard(priorityQueue);
-        if (goal != null)
-        {
-            this.goal = goal;
-            isSolvable = true;
-            return;
-        }
         
-        goal = processOneBoard(twinsQueue);
-        if (goal != null)
+        // recursion causes StackOverflow
+        while (true)
         {
-            isSolvable = false;
-            return;
-        }
-        
-        processBoard();
+            goal = processOneBoard(priorityQueue);
+            if (goal != null)
+            {
+                this.goal = goal;
+                isSolvable = true;
+                break;
+            }
+            
+            goal = processOneBoard(twinsQueue);
+            if (goal != null)
+            {
+                isSolvable = false;
+                break;
+            }
+        }   
     }
     
     private SearchNode processOneBoard(MinPQ<SearchNode> queue)
@@ -92,7 +96,7 @@ public class Solver {
         if (!isSolvable)
             return null;
         
-        ArrayDeque<Board> solution = new ArrayDeque<Board>();
+        Stack<Board> solution = new Stack<Board>();
         
         SearchNode board = goal;
         while (board != null)
@@ -142,18 +146,12 @@ public class Solver {
         }
         
         @Override
-        public int compareTo(SearchNode o) {
-            
-            if (this.node.equals(o.node))
-                return 0;
-            
+        public int compareTo(SearchNode o) 
+        {    
             int thisIndex = node.manhattan() + moves;
             int thatIndex = o.node.manhattan() + o.moves;
             
-            if (thisIndex > thatIndex)
-                return 1;
-            
-            return -1;
+            return thisIndex - thatIndex;
         }
         
     }
