@@ -1,24 +1,56 @@
+import java.util.ArrayDeque;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
     
-    Board initial;
-    MinPQ<SearchNode> priorityQueue;
-    SearchNode goal;
+    private MinPQ<SearchNode> priorityQueue;
+    private MinPQ<SearchNode> twinsQueue;
+    private SearchNode goal;
+    private boolean isSolvable;
     
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial)
     {
-        this.initial = initial;
-        priorityQueue = new MinPQ<SearchNode>();
+        priorityQueue = new MinPQ<SearchNode>();        
         SearchNode board = new SearchNode(initial, null, 0);
-        goal = processBoard(board);
+        priorityQueue.insert(board);
+        
+        twinsQueue = new MinPQ<SearchNode>();
+        Board twin = initial.twin();
+        SearchNode twinNode = new SearchNode(twin, null, 0);
+        twinsQueue.insert(twinNode);
+        
+        processBoard();
     }
     
-    private SearchNode processBoard(SearchNode board)
-    {
+    private void processBoard()
+    {        
+        SearchNode goal; 
+        goal = processOneBoard(priorityQueue);
+        if (goal != null)
+        {
+            this.goal = goal;
+            isSolvable = true;
+            return;
+        }
+        
+        goal = processOneBoard(twinsQueue);
+        if (goal != null)
+        {
+            isSolvable = false;
+            return;
+        }
+        
+        processBoard();
+    }
+    
+    private SearchNode processOneBoard(MinPQ<SearchNode> queue)
+    {        
+        SearchNode board = queue.delMin();
+        
         if (board.node.isGoal())
             return board;
         
@@ -33,31 +65,42 @@ public class Solver {
             if (sn.node.isGoal())
                 return sn;
                         
-            priorityQueue.insert(sn);
+            queue.insert(sn);
         }
         
-        SearchNode next = priorityQueue.delMin();
-        return processBoard(next);
+        return null;
     }
-    
-   
     
     // is the initial board solvable?
     public boolean isSolvable()
     {
-        return true;
+        return isSolvable;
     }
     
     // min number of moves to solve initial board; -1 if unsolvable
     public int moves() 
     {
+        if (goal == null)
+            return -1;
+        
         return goal.moves;
     }
     
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution()
     {
-        return null;
+        ArrayDeque<Board> solution = new ArrayDeque<Board>();
+        
+        if (!isSolvable)
+            return solution;
+        
+        SearchNode board = goal;
+        while (board != null)
+        {
+            solution.push(board.node);
+            board = board.parent;
+        }
+        return solution;
     }
     
     // solve a slider puzzle
