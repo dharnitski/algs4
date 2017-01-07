@@ -89,10 +89,10 @@ public class Solver {
     // sequence of boards in a shortest solution; null if unsolvable
     public Iterable<Board> solution()
     {
-        ArrayDeque<Board> solution = new ArrayDeque<Board>();
-        
         if (!isSolvable)
-            return solution;
+            return null;
+        
+        ArrayDeque<Board> solution = new ArrayDeque<Board>();
         
         SearchNode board = goal;
         while (board != null)
