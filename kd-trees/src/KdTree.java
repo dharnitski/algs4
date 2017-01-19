@@ -1,14 +1,13 @@
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.SET;
-import edu.princeton.cs.algs4.Queue;
 
-public class PointSET {
-
-    private SET<Point2D> set;
+public class KdTree {
+	private SET<Point2D> set;
 
     // construct an empty set of points
-    public PointSET() {
+    public KdTree() {
         set = new SET<Point2D>();
     }
 
