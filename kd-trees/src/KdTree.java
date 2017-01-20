@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.SET;
 
 public class KdTree {
 
@@ -29,6 +28,9 @@ public class KdTree {
 		}
 
 		Node addPoint(Point2D newP) {
+			if (this.p.equals(newP))
+				return null;
+
 			if ((vertical() && newP.x() < p.x()) || (horizontal() && newP.y() < p.y())) {
 				if (lb == null) {
 					lb = new Node(newP);
@@ -83,11 +85,14 @@ public class KdTree {
 		if (p == null)
 			throw new NullPointerException();
 
-		if (top == null)
+		if (top == null) {
 			top = new Node(p);
-		else
-			top.addPoint(p);
-		size++;
+			size++;
+		} else {
+			Node node = top.addPoint(p);
+			if (node != null)
+				size++;
+		}
 	}
 
 	// does the set contain point p?
@@ -169,7 +174,7 @@ public class KdTree {
 			distance = current;
 			champion = new Champion(node, distance);
 		} else {
-           champion = new Champion(null, Double.MAX_VALUE);
+			champion = new Champion(null, Double.MAX_VALUE);
 		}
 
 		Champion childChampion = null;
