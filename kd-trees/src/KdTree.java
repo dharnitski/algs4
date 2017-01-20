@@ -1,15 +1,18 @@
+import java.io.Console;
+
+import edu.princeton.cs.algs4.Out;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 public class KdTree {
 
 	private class Node {
 
 		private Point2D p; // the point
-		// private RectHV rect; // the axis-aligned rectangle corresponding to
-		// this
-		// node
+		private RectHV rect; // the axis-aligned rectangle corresponding to this
+								// node
 		private Node lb; // the left/bottom subtree
 		private Node rt; // the right/top subtree
 
@@ -20,11 +23,11 @@ public class KdTree {
 		private boolean type;
 
 		boolean vertical() {
-			return type;
+			return !type;
 		}
 
 		boolean horizontal() {
-			return !type;
+			return type;
 		}
 
 		Node addPoint(Point2D newP) {
@@ -35,6 +38,7 @@ public class KdTree {
 				if (lb == null) {
 					lb = new Node(newP);
 					lb.type = !this.type;
+					setRectangle(this, lb);
 					return lb;
 				} else {
 					return lb.addPoint(newP);
@@ -43,11 +47,40 @@ public class KdTree {
 				if (rt == null) {
 					rt = new Node(newP);
 					rt.type = !this.type;
+					setRectangle(this, rt);
 					return rt;
 				} else {
 					return rt.addPoint(newP);
 				}
 			}
+		}
+
+		void setRectangle(Node parent, Node node) {
+			if (parent.vertical()) {
+				if (node.p.x() < parent.p.x()) {
+					node.rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.p.x(), parent.rect.ymax());
+				} else {
+					node.rect = new RectHV(parent.p.x(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
+				}
+			}
+			else
+			{
+				if (node.p.y() < parent.p.y()) {
+					node.rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.p.x(), parent.p.y());
+				} else {
+					node.rect = new RectHV(parent.rect.xmin(), parent.p.y(), parent.rect.xmax(), parent.rect.ymax());
+				}
+			}
+		}
+
+		public String toString() {
+			String alighnment;
+			if (this.vertical())
+				alighnment = " | ";
+			else
+				alighnment = " - ";
+
+			return p.toString() + alighnment;
 		}
 
 		void draw() {
@@ -87,6 +120,7 @@ public class KdTree {
 
 		if (top == null) {
 			top = new Node(p);
+			top.rect = new RectHV(0, 0, 1, 1);
 			size++;
 		} else {
 			Node node = top.addPoint(p);
@@ -107,9 +141,28 @@ public class KdTree {
 
 	// draw all points to standard draw
 	public void draw() {
-		if (top != null)
-			top.draw();
-	}
+        draw(top);
+    }
+
+    private void draw(Node x) {
+        if (x == null) {
+            return;
+        }
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(0.01);
+        x.p.draw();
+        if (x.vertical()) {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.setPenRadius(0.001);
+            StdDraw.line(x.p.x(), x.rect.ymin(), x.p.x(), x.rect.ymax());
+        } else {
+            StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.setPenRadius(0.001);
+            StdDraw.line(x.rect.xmin(), x.p.y(), x.rect.xmax(), x.p.y());
+        }
+        draw(x.lb);
+        draw(x.rt);
+    }
 
 	// all points that are inside the rectangle
 	public Iterable<Point2D> range(RectHV rect) {
@@ -181,7 +234,7 @@ public class KdTree {
 
 		if ((node.vertical() && node.p.x() > p.x()) || (node.horizontal() && node.p.y() > p.y())) {
 			childChampion = getChampion(node.lb, p, distance);
-			if (childChampion.distance < distance) {
+			if ((node.rt == null)  || childChampion.distance < node.rt.rect.distanceSquaredTo(p)) {
 				return childChampion;
 			} else {
 				childChampion = getChampion(node.rt, p, distance);
@@ -190,7 +243,7 @@ public class KdTree {
 			}
 		} else {
 			childChampion = getChampion(node.rt, p, distance);
-			if (childChampion.distance < distance) {
+			if ((node.lb == null)  || childChampion.distance < node.lb.rect.distanceSquaredTo(p)) {
 				return childChampion;
 			} else {
 				childChampion = getChampion(node.lb, p, distance);
