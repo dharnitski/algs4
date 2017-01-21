@@ -1,6 +1,3 @@
-import java.io.Console;
-
-import edu.princeton.cs.algs4.Out;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
@@ -62,11 +59,9 @@ public class KdTree {
 				} else {
 					node.rect = new RectHV(parent.p.x(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
 				}
-			}
-			else
-			{
+			} else {
 				if (node.p.y() < parent.p.y()) {
-					node.rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.p.x(), parent.p.y());
+					node.rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), parent.p.y());
 				} else {
 					node.rect = new RectHV(parent.rect.xmin(), parent.p.y(), parent.rect.xmax(), parent.rect.ymax());
 				}
@@ -82,17 +77,16 @@ public class KdTree {
 
 			return p.toString() + alighnment;
 		}
+	}
 
-		void draw() {
-
-			p.draw();
-
-			if (lb != null)
-				lb.draw();
-
-			if (rt != null)
-				rt.draw();
+	private class Champion {
+		Champion(Node node, double distance) {
+			this.node = node;
+			this.distance = distance;
 		}
+
+		Node node;
+		double distance;
 	}
 
 	private Node top;
@@ -141,28 +135,28 @@ public class KdTree {
 
 	// draw all points to standard draw
 	public void draw() {
-        draw(top);
-    }
+		draw(top);
+	}
 
-    private void draw(Node x) {
-        if (x == null) {
-            return;
-        }
-        StdDraw.setPenColor(StdDraw.BLACK);
-        StdDraw.setPenRadius(0.01);
-        x.p.draw();
-        if (x.vertical()) {
-            StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.setPenRadius(0.001);
-            StdDraw.line(x.p.x(), x.rect.ymin(), x.p.x(), x.rect.ymax());
-        } else {
-            StdDraw.setPenColor(StdDraw.BLUE);
-            StdDraw.setPenRadius(0.001);
-            StdDraw.line(x.rect.xmin(), x.p.y(), x.rect.xmax(), x.p.y());
-        }
-        draw(x.lb);
-        draw(x.rt);
-    }
+	private void draw(Node x) {
+		if (x == null) {
+			return;
+		}
+		StdDraw.setPenColor(StdDraw.BLACK);
+		StdDraw.setPenRadius(0.01);
+		x.p.draw();
+		if (x.vertical()) {
+			StdDraw.setPenColor(StdDraw.RED);
+			StdDraw.setPenRadius(0.001);
+			StdDraw.line(x.p.x(), x.rect.ymin(), x.p.x(), x.rect.ymax());
+		} else {
+			StdDraw.setPenColor(StdDraw.BLUE);
+			StdDraw.setPenRadius(0.001);
+			StdDraw.line(x.rect.xmin(), x.p.y(), x.rect.xmax(), x.p.y());
+		}
+		draw(x.lb);
+		draw(x.rt);
+	}
 
 	// all points that are inside the rectangle
 	public Iterable<Point2D> range(RectHV rect) {
@@ -206,63 +200,48 @@ public class KdTree {
 		if (p == null)
 			throw new NullPointerException();
 
-		double distance = Double.MAX_VALUE;
+		if (top == null)
+			return null;
 
-		Champion result = getChampion(top, p, distance);
+		double distance = p.distanceSquaredTo(top.p);
 
-		return result.node.p;
+		Champion champion = new Champion(top, distance);
+
+		getChampion(top, p, champion);
+
+		return champion.node.p;
 	}
 
-	private Champion getChampion(Node node, Point2D p, double distance) {
+	private void getChampion(Node node, Point2D p, Champion champion) {
 
 		if (node == null) {
-			return new Champion(null, Double.MAX_VALUE);
+			return;
 		}
 
-		double current = p.distanceSquaredTo(node.p);
-
-		Champion champion;
-
-		if (current < distance) {
-			distance = current;
-			champion = new Champion(node, distance);
+		if (node.lb != null && (node.vertical() && p.x() < node.p.x()) || (node.horizontal() && p.y() < node.p.y())) {
+			processNode(node.lb, node.rt, p, champion);
 		} else {
-			champion = new Champion(null, Double.MAX_VALUE);
+			processNode(node.rt, node.lb, p, champion);
 		}
-
-		Champion childChampion = null;
-
-		if ((node.vertical() && node.p.x() > p.x()) || (node.horizontal() && node.p.y() > p.y())) {
-			childChampion = getChampion(node.lb, p, distance);
-			if ((node.rt == null)  || childChampion.distance < node.rt.rect.distanceSquaredTo(p)) {
-				return childChampion;
-			} else {
-				childChampion = getChampion(node.rt, p, distance);
-				if (childChampion.distance < distance)
-					return childChampion;
-			}
-		} else {
-			childChampion = getChampion(node.rt, p, distance);
-			if ((node.lb == null)  || childChampion.distance < node.lb.rect.distanceSquaredTo(p)) {
-				return childChampion;
-			} else {
-				childChampion = getChampion(node.lb, p, distance);
-				if (childChampion.distance < distance)
-					return childChampion;
-			}
-		}
-
-		return champion;
 	}
 
-	private class Champion {
-		Champion(Node node, double distance) {
-			this.node = node;
-			this.distance = distance;
+	private void processNode(Node n1, Node n2, Point2D p, Champion champion) {
+		verifyChampion(n1, p, champion);
+		if ((n2 != null) && champion.distance >= n2.rect.distanceSquaredTo(p)) {
+			verifyChampion(n2, p, champion);
 		}
+	}
 
-		Node node;
-		double distance;
+	private void verifyChampion(Node node, Point2D p, Champion champion) {
+		if (node == null)
+			return;
+
+		double currentDistance = p.distanceSquaredTo(node.p);
+		if (currentDistance < champion.distance) {
+			champion.node = node;
+			champion.distance = currentDistance;
+		}
+		getChampion(node, p, champion);
 	}
 
 	// unit testing of the methods (optional)
